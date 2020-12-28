@@ -20,7 +20,7 @@ class Testlogin():
         print(response.json())
         t = response.json()['result']['token']
         # token = {'token': t}
-        self.data.send_token('token','token',t)
+        self.data.send_data('token','token',t)
         assert response.status_code == 200
 
 

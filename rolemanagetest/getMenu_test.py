@@ -6,15 +6,22 @@ from getdata import Getdata
 
 class TestGetmenu:
     def setup(self):
-        data = Getdata()
-        self.token = data.getdata('token', 'token')
-        self.address = data.getdata('data', 'address')
+        self.data = Getdata()
+        self.token = self.data.getdata('token', 'token')
+        self.address = self.data.getdata('data', 'address')
     #获取所有已交付地点area_id
     def test_getdetail(self):
-        url = f"{self.address}/api/cloud/Permisssion/getMenu"
+        url = f"{self.address}/api/BasicData/getAllDeliveryAreas"
         payload = {}
         headers = {'X-Token': f'{self.token}'}
         response = requests.request("GET", url, headers=headers, data=payload)
+        id=response.json()['result']['data']
+        ids=[]
+        for i in range(len(id)):
+            areaid=id[i]['id']
+            ids.append(areaid)
+        print(ids)
+        self.data.send_data('areaid', 'area_id', ids)
         print(response.json())
         assert response.status_code == 200
 
