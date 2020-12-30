@@ -46,22 +46,42 @@ class TestGetmenu:
         #统计任务类型
         if(len(response.json()['result']['data']) <= 0):
             print(f"{self.getarea_name(areaid)}在{begindate}号到{enddate}号没有任务")
-        # elif：
-        #    for i in range(len(response.json()['result']['data'])):
         assert response.status_code == 200
+        assert response.json()['result']['data'] != 0
+    #判断明细报表中所有已交付地点都有数据
+
 
     @pytest.mark.parametrize('areaid', Getdata.getdata('', 'areaid', 'area_id'))
     def test_getalldetail(self, areaid):
-        begindate = "2020-12-25"
+        begindate = "2020-12-29"
         enddate = "2020-12-29"
         url = f"{self.address}/api/cloud/RunLog/getDetailRunLogs"
         payload = f'begin_date={begindate}&end_date={enddate}&area_id={areaid}'
         headers = {'X-Token': f'{self.token}', 'Content-Type': 'application/x-www-form-urlencoded'}
         response = requests.request("POST", url, headers=headers, data=payload)
         print(response.json())
+        data=response.json()['result']['data']
         # 统计任务类型
-        if (len(response.json()['result']['data']) <= 0):
-            print(f"{self.getarea_name(areaid)}在{begindate}号到{enddate}号没有任务")
+        if (len(data) <= 0):
+            print(f"{self.getarea_name(areaid)}在{begindate}到{enddate}期间没有任务")
+        else:
+            map={}
+            result={}
+            for i in range(len(data)):
+                item=data[i]
+                key=item['run_type']
+                if(map.get(key)):
+                    map[key]+=1
+                else:
+                    map[key]=1
+            for i in range(len(data)):
+                item = data[i]
+                key = item['run_result']
+                if (result.get(key)):
+                    result[key] += 1
+                else:
+                    result[key] = 1
+        print(f'任务类型:数量:{map},任务状态:数量:{result}')
         assert response.status_code == 200
 
 
